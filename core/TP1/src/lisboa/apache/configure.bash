@@ -15,9 +15,9 @@ sudo a2enmod ssl
 
 # dar load dos folders para os locais corretos
     # folders html
-    sudo mkdir /var/www/server-tp1 /var/www/server-tp1-ssl
-    sudo cp -f -r $filedir/servers-html/server-tp1 /var/www/
-    sudo cp -f -r $filedir/servers-html/server-tp1-ssl /var/www/
+    sudo mkdir /var/www/http /var/www/ssl-http
+    sudo cp -f -r $filedir/html/http/ /var/www/
+    sudo cp -f -r $filedir/html/ssl-http/ /var/www/
     
     # folders conf do apache
     sudo cp -f $filedir/config/http.conf $filedir/config/ssl-http.conf /etc/apache2/sites-available
