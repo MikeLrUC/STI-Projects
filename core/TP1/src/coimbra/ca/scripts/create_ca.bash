@@ -17,3 +17,7 @@ sudo openssl x509 -req -in ca.csr -out cacert.pem -signkey ./private/cakey.pem  
 
 # Remove CSR
 sudo rm ca.csr
+
+# Create index.txt and serial files for the CA to function properly
+sudo touch index.txt
+echo 01 | sudo tee serial
