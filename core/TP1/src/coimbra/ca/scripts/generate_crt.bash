@@ -53,3 +53,7 @@ sudo openssl ca -in $NAME.csr -cert cacert.pem -keyfile ./private/cakey.pem -out
 
 # Remove CSR
 sudo rm $NAME.csr
+
+# Convert to PKCS#12
+sudo openssl pkcs12 -export -in ./certs/$NAME.crt -out ./p12/$NAME.p12 -inkey ./private/$NAME.key  -certfile cacert.pem -passin pass:$NAME -passout pass:export
+sudo chmod 755 ./p12/$NAME.p12

@@ -5,7 +5,7 @@
 filedir=`dirname "$0"`
 
 # instalar o apache
-sudo apt-get install apache2
+sudo apt-get install apache2 -y
 
 # iniciar o apache
 sudo systemctl start apache2
@@ -26,6 +26,9 @@ sudo a2enmod ssl
 cd /etc/apache2/sites-available
 sudo a2ensite http.conf
 sudo a2ensite ssl-http.conf
+
+# Update Hosts
+echo "127.10.10.10  tp1.ul.pt" | sudo tee -a /etc/hosts
 
 # dar reload ao apache
 sudo systemctl reload apache2
