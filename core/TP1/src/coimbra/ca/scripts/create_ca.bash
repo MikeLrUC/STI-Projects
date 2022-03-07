@@ -4,7 +4,7 @@
 cd /etc/pki/
 sudo mkdir CA
 cd CA
-sudo mkdir certs newcerts private p12
+sudo mkdir certs newcerts private p12 dh
 
 # Generate key pairs
 sudo openssl genrsa -des3 -out ./private/cakey.pem -passout pass:cakey 2048 

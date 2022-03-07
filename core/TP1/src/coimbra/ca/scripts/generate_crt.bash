@@ -57,3 +57,6 @@ sudo rm $NAME.csr
 # Convert to PKCS#12
 sudo openssl pkcs12 -export -in ./certs/$NAME.crt -out ./p12/$NAME.p12 -inkey ./private/$NAME.key  -certfile cacert.pem -passin pass:$NAME -passout pass:export
 sudo chmod 755 ./p12/$NAME.p12
+
+# Generate Diffie-Hellman key
+sudo openssl dhparam -out ./dh/"$NAME"dh.pem 2048
