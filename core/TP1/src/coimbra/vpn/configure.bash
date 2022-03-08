@@ -2,26 +2,16 @@
 
 filedir=`dirname "$0"`
 
-if [ $# == 1 ]; then
-
-    # Instalar openvpn
-    sudo apt-get install openvpn
-
-    # Ligar a openvpn
-    sudo systemctl start openvpn
-
-    # adicionar ao ficheiro de configuracao o ip que foi passado por argumento
-    sudo printf "\nlocal $1" >> $filedir/config/coimbra-gateway.conf
-
-    # criar a diretoria para guardar o ficheiro de configuracao
-    sudo mkdir -p /etc/openvpn/coimbra-gateway # -p nao da erro se a diretoria existir
-
-    # colocar os ficheiros nas respetivas diretorias
-    sudo cp -f $filedir/config/coimbra-gateway.conf /etc/openvpn/coimbra-gateway # da overwrite do ficheiro se este ja existir na diretoria
-
-    # ligar o server vpn
-    sudo openvpn --config /etc/openvpn/coimbra-gateway/coimbra-gateway.conf
-
-else
-    echo "configure.bash <server ip>"
+if [ $# -ne 2 ]; then
+    echo "Usage: bash configure.bash <TOPT-username> <server-ip>"
+    exit 1
 fi
+
+NAME=$1
+SERVERIP=$2
+
+# Create Default Road-Warrior User
+bash $filedir/scripts/totp.bash $NAME
+
+# Load config and start VPN Server
+bash $filedir/scripts/load_config.bash $SERVERIP

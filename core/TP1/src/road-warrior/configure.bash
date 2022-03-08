@@ -3,7 +3,10 @@
 filedir=`dirname "$0"`
 
 if [ $# == 1 ]; then
-
+    # Install and Start OpenVPN
+    sudo apt-get install openvpn -y
+    sudo systemctl start openvpn
+    
     # adicionar ao ficheiro de configuracao o ip que foi passado por argumento
     sudo printf "\nremote $1 1194" >> $filedir/config/roadwarrior.conf
 
