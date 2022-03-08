@@ -33,5 +33,5 @@ sudo chmod +x /etc/openvpn/openvpn_pam_totp.py
 # Back to folder
 cd -
 
-# Generate Key for user
+# Generate TOTP qrcode for user
 sudo /etc/openvpn/openvpn_pam_totp.py --genkey $NAME > $filedir/../$NAME.txt
