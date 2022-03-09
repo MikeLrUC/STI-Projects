@@ -13,13 +13,13 @@ sudo apt-get install openvpn -y
 sudo systemctl start openvpn
 
 # Add server-ip to the Lisboa server.conf file
-sudo printf "\nlocal $SERVERIP" >> $filedir/../config/lisboa-server.conf
+sudo printf "\nlocal $SERVERIP" >> $filedir/config/lisboa-server.conf
 
 # Make directory for the Lisboa server.config file
 sudo mkdir -p /etc/openvpn/lisboa-server
 
 # Replace config file
-sudo cp -f $filedir/../config/lisboa-server.conf /etc/openvpn/lisboa-server
+sudo cp -f $filedir/config/lisboa-server.conf /etc/openvpn/lisboa-server
 
 # Start VPN Server
 sudo openvpn --config /etc/openvpn/lisboa-server/lisboa-server.conf

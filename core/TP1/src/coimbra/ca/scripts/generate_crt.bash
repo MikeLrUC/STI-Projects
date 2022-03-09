@@ -6,7 +6,7 @@
 #           bash generate_crt.bash     uol           UK         London              UoL        SMCSE    smcse.ac.uk   
 
 # Missing Parameters
-if [ "$#" -ne 6 ]; then
+if [ "$#" -ne 7 ]; then
     echo "Not enough Parameters"
     echo "1 - Name: Key file name, key password, crt file name, crt password"
     echo "2 - Country: DN Country [C]"
@@ -14,6 +14,7 @@ if [ "$#" -ne 6 ]; then
     echo "4 - Organization: DN Organization [O]"
     echo "5 - Unit: DN Organizational Unit [OU]"
     echo "6 - Common Name: DN Common Name [CN]"
+    echo "7 - generate or not a dh"
     exit 2
 fi
 
@@ -39,6 +40,7 @@ L=$3
 O=$4
 OU=$5
 CN=$6
+DH=$7
 
 cd /etc/pki/CA/
 
@@ -58,5 +60,7 @@ sudo rm $NAME.csr
 sudo openssl pkcs12 -export -in ./certs/$NAME.crt -out ./p12/$NAME.p12 -inkey ./private/$NAME.key  -certfile cacert.pem -passin pass:$NAME -passout pass:export
 sudo chmod 755 ./p12/$NAME.p12
 
-# Generate Diffie-Hellman key
-sudo openssl dhparam -out ./dh/"$NAME"dh.pem 2048
+if [ $DH -eq 1 ]; then
+    # Generate Diffie-Hellman key
+    sudo openssl dhparam -out ./dh/"$NAME"dh.pem 2048
+fi

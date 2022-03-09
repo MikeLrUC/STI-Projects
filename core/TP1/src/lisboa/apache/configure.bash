@@ -15,7 +15,7 @@ sudo a2enmod ssl
 
 # dar load dos folders para os locais corretos
     # folders html
-    sudo mkdir /var/www/http /var/www/ssl-http
+    sudo mkdir -p /var/www/http /var/www/ssl-http
     sudo cp -f -r $filedir/html/http/ /var/www/
     sudo cp -f -r $filedir/html/ssl-http/ /var/www/
     
