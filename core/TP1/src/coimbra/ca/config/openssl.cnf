@@ -167,6 +167,8 @@ unstructuredName		= An optional company name
 
 [ usr_cert ]
 
+authorityInfoAccess = OCSP;URI:http://ocsp.server
+
 # These extensions are added when 'ca' signs a request.
 
 # This goes against PKIX guidelines but some CAs do it and some software

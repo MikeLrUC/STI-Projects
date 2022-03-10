@@ -6,7 +6,7 @@ if [ $# == 1 ]; then
     # Install and Start OpenVPN
     sudo apt-get install openvpn -y
     sudo systemctl start openvpn
-    
+
     # adicionar ao ficheiro de configuracao o ip que foi passado por argumento
     sudo printf "\nremote $1 1195" >> $filedir/config/roadwarrior.conf
 
@@ -20,7 +20,7 @@ if [ $# == 1 ]; then
 
     # ligar ao server vpn
     sudo openvpn --config /etc/openvpn/roadwarrior/roadwarrior.conf
-    
+
 else
     echo "configure.bash <openvpn_server ip>"
 fi
