@@ -10,6 +10,8 @@ if [ $# == 1 ]; then
     # adicionar ao ficheiro de configuracao o ip que foi passado por argumento
     sudo printf "\nremote $1 1195" >> $filedir/config/roadwarrior.conf
 
+    # Modificar /etc/hosts
+    echo "10.10.0.1     tp1.ul.pt" | sudo tee -a /etc/hosts
     # criar a diretoria para guardar o ficheiro de configuracao
     sudo mkdir -p /etc/openvpn/roadwarrior # -p nao da erro se a diretoria existir
 
