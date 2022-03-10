@@ -167,7 +167,7 @@ unstructuredName		= An optional company name
 
 [ usr_cert ]
 
-authorityInfoAccess = OCSP;URI:http://ocsp.server
+authorityInfoAccess = OCSP;URI:http://ocsp.server:81
 
 # These extensions are added when 'ca' signs a request.
 
