@@ -2,8 +2,8 @@
 
 # Examples:                          File Name     Country   State & Location   Organization    Unit    Common Name
 
-#           bash generate_crt.bash   myserver        PT         Coimbra             UC          DEI     my.server.net     
-#           bash generate_crt.bash     uol           UK         London              UoL        SMCSE    smcse.ac.uk   
+#           bash generate_crt.bash   myserver        PT         Coimbra             UC          DEI     my.server.net
+#           bash generate_crt.bash     uol           UK         London              UoL        SMCSE    smcse.ac.uk
 
 # Missing Parameters
 if [ "$#" -ne 7 ]; then
@@ -45,12 +45,12 @@ DH=$7
 cd /etc/pki/CA/
 
 # Generate key pairs
-sudo openssl genrsa -des3 -out ./private/$NAME.key -passout pass:$NAME 2048 
+sudo openssl genrsa -des3 -out ./private/$NAME.key -passout pass:$NAME 2048
 
 # Generate Certificate Signing Request (CSR)
 sudo openssl req -new -key ./private/$NAME.key -out $NAME.csr -subj "/C=$C/ST=$ST/L=$L/O=$O/OU=$OU/CN=$CN" -passin pass:$NAME
 
-# Generate X.509 "Self-Signed" Certificate 
+# Generate X.509 "Self-Signed" Certificate
 sudo openssl ca -in $NAME.csr -cert cacert.pem -keyfile ./private/cakey.pem -out ./certs/$NAME.crt -passin pass:cakey -batch
 
 # Remove CSR
@@ -63,4 +63,8 @@ sudo chmod 755 ./p12/$NAME.p12
 if [ $DH -eq 1 ]; then
     # Generate Diffie-Hellman key
     sudo openssl dhparam -out ./dh/"$NAME"dh.pem 2048
+
+    sudo apt-get install openvpn -y
+    sudo systemctl start openvpn
+    sudo openvpn --genkey tls-auth /etc/openvpn/"$NAME"/"ta$NAME".key
 fi

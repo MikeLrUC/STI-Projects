@@ -7,8 +7,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-NAME=$1
-SERVERIP=$2
+SERVERIP=$1
 
 # IP forwarding
 sudo sysctl -w net.ipv4.ip_forward=1
