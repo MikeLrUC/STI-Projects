@@ -2,8 +2,8 @@
 
 filedir=`dirname "$0"`
 
-if [ $# -ne 2 ]; then
-    echo "Usage: bash configure_server.bash <TOPT-username> <server-ip>"
+if [ $# -ne 1 ]; then
+    echo "Usage: bash configure_server.bash <server-ip>"
     exit 1
 fi
 
