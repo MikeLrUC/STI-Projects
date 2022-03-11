@@ -20,6 +20,7 @@ sudo mkdir -p /etc/openvpn/coimbra-server
 
 # Replace config file
 sudo cp -f $filedir/../config/coimbra-server.conf /etc/openvpn/coimbra-server
+sudo cp -f $filedir/../../OCSP/ocsp_config.bash /etc/openvpn/coimbra-server
 
 # Start VPN Server
 sudo openvpn --config /etc/openvpn/coimbra-server/coimbra-server.conf
