@@ -4,7 +4,7 @@
 filedir=`dirname "$0"`
 
 if [ $# -ne 1 ]; then
-    echo "usage: bash totp.bash <username>"
+    echo "usage: bash totp_user.bash <username>"
     exit 1
 fi
 

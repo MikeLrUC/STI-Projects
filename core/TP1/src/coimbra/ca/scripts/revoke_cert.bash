@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
-    echo "Usage: bash load_server_config.bash <certificate name>"
+    echo "Usage: bash revoke_cert.bash <certificate name>"
     exit 1
 fi
 
