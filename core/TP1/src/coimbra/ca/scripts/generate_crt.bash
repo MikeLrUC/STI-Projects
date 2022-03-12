@@ -63,8 +63,4 @@ sudo chmod 755 ./p12/$NAME.p12
 if [ $DH -eq 1 ]; then
     # Generate Diffie-Hellman key
     sudo openssl dhparam -out ./dh/"$NAME"dh.pem 2048
-
-    sudo apt-get install openvpn -y
-    sudo systemctl start openvpn
-    sudo openvpn --genkey tls-auth /etc/openvpn/"$NAME"/"ta$NAME".key
 fi
