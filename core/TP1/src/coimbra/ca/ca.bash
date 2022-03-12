@@ -12,4 +12,3 @@ bash $filedir/scripts/generate_crt.bash   coimbra-client   PT  Coimbra     UP   
 bash $filedir/scripts/generate_crt.bash   lisboa-server    PT  Lisboa      UL   FCT   LisboaServer  1      # Generate Lisboa
 bash $filedir/scripts/generate_crt.bash   apache           PT  Lisboa      UL   FCT   tp1.ul.pt     0      # Generate Apache CRT
 bash $filedir/scripts/generate_crt.bash   warrior          PT  Porto       UP   DEI   ClientVPN     0      # Generate Warrior CRT
-
