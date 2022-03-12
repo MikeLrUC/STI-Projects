@@ -32,4 +32,4 @@ echo "10.10.0.1  tp1.ul.pt" | sudo tee -a /etc/hosts
 echo "10.10.0.6  ocsp.server" | sudo tee -a /etc/hosts # Coimbra
 
 # dar reload ao apache
-sudo systemctl reload apache2
+sudo systemctl restart apache2
