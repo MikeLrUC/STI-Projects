@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# based on: https://ulimit.nl/wp-content/uploads/2019/08/Extending-a-Debian-OpenVPN-server-with-Multi-Factor-Authentication-via-Google-Authenticator.pdf
+
 filedir=`dirname "$0"`
 
 # instalar o google authenticator
