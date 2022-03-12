@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# code from https://studfile.net/preview/6009974/page:61/
+
 ocsp_url="http://ocsp.server:81"
 issuer="/etc/pki/CA/cacert.pem"
 
