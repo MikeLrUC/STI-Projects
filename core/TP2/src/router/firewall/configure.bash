@@ -39,91 +39,141 @@ sudo ifconfig $DMZ_ITF $DMZ_ROUTER_IP netmask 255.255.255.0             # DMZ
 
 ## ==== [ Table filter ] ==== ##
 
+
 # ---- FORWARD ---- #
 
 
-## Direct Forwarding 
+# DNS
 
-
-# Allow DNS using dns server in DMZ
-#TODO: Between Networks is (Internet + DMZ + Internal) or (DMZ + Internal)
+# Internal Network -> Internet
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport domain -j ACCEPT
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p udp --dport domain -j ACCEPT
+# DMZ Network -> Internet
+sudo iptables -t filter -A FORWARD -s $DMZ_NET -i $DMZ_ITF -o $EXTERNAL_ITF -p tcp --dport domain -j ACCEPT
+sudo iptables -t filter -A FORWARD -s $DMZ_NET -i $DMZ_ITF -o $EXTERNAL_ITF -p udp --dport domain -j ACCEPT
+# [Direct] Internal Network -> dns server
 sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport domain -j ACCEPT
 sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p udp --dport domain -j ACCEPT
+# Internet -> dns server
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport domain -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p udp --dport domain -j ACCEPT
 
-# Allow SMTP connections to the smtp server #TODO: Between Networks is (Internet + DMZ + Internal) or (DMZ + Internal)
+# DNS zone Synchronization [w/ TCP]:
+#   - dns server  -> dns2 & Others  :   DONE ABOVE (DMZ -> Internet) 
+#   - dns2 server -> dns server     :   DONE ABOVE (Internet -> dns server)
+
+
+# SMTP
+
+# [Direct] Internal Network -> smtp server
 sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport smtp -j ACCEPT
+# Internet -> smtp server
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport smtp -j ACCEPT
 
-# Allow POP and IMAP connections to the mail server#TODO: Between Networks is (Internet + DMZ + Internal) or (DMZ + Internal)
+
+# POP
+
+# [Direct] Internal Network -> mail server
 sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport imap -j ACCEPT
+# Internet -> mail server
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport imap -j ACCEPT
+
+
+# IMAP
+
+# [Direct] Internal Network -> mail server
 sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport pop -j ACCEPT
+# Internet -> mail server
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport pop -j ACCEPT
 
-# Allow http and https connections #TODO: Between Networks is (Internet + DMZ + Internal) or (DMZ + Internal)
+
+# HTTP 
+
+# [Direct] Internal Network -> www server
 sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport http -j ACCEPT
+# Internet -> www server
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport http -j ACCEPT
+# Internal Network -> Internet
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport http -j ACCEPT
+
+
+# HTTPS
+
+# [Direct] Internal Network -> www server
 sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport https -j ACCEPT
+# Internet -> www server
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport https -j ACCEPT
+# Internal Network -> Internet
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport https -j ACCEPT
 
-# Allow OpenVpn connections #TODO: Between Networks is (Internet + DMZ + Internal) or (DMZ + Internal)
-# https://openvpn.net/vpn-server-resources/advanced-option-settings-on-the-command-line/ 
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p udp --dport 1194 -j ACCEPT
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport 443 -j ACCEPT
 
-# Allow VPN clients from vpn-gw to connect to the datastore server
-# https://www.speedguide.net/port.php?port=5432
+# OpenVPN - https://openvpn.net/vpn-server-resources/advanced-option-settings-on-the-command-line/ 
+
+# [Direct] Internal Network -> vpn-gw server
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_NET -o $DMZ_ITF -p udp --dport 1194 -j ACCEPT
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_NET -o $DMZ_ITF -p tcp --dport 443 -j ACCEPT
+# Internet -> vpn-gw server 
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p udp --dport 1194 -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport 443 -j ACCEPT
+
+
+# PostgreSQL - https://www.speedguide.net/port.php?port=5432
+
+# [Direct] VPN Clients -> datastore server
 sudo iptables -t filter -A FORWARD -s $DMZ_MACHINE_IP -d $INTERNAL_MACHINE_IP -i $DMZ_ITF -o $INTERNAL_ITF -p tcp --dport 5432 -j ACCEPT
 
-# Allow VPN clients from vpn-gw to connect to the kerberos v5 service
-# https://docs.oracle.com/cd/E41492_01/E41495/html/ad-auth.html :
 
+# Kerberos v5 - https://docs.oracle.com/cd/E41492_01/E41495/html/ad-auth.html
+
+# [Direct] VPN Clients -> kerberos server
 sudo iptables -t filter -A FORWARD -s $DMZ_MACHINE_IP -d $INTERNAL_MACHINE_IP -i $DMZ_ITF -o $INTERNAL_ITF -p tcp --dport 88 -m connlimit --connlimit-upto 10 -j ACCEPT
 sudo iptables -t filter -A FORWARD -s $DMZ_MACHINE_IP -d $INTERNAL_MACHINE_IP -i $DMZ_ITF -o $INTERNAL_ITF -p udp --dport 88 -m connlimit --connlimit-upto 10 -j ACCEPT
 sudo iptables -t filter -A FORWARD -s $DMZ_MACHINE_IP -d $INTERNAL_MACHINE_IP -i $DMZ_ITF -o $INTERNAL_ITF -p tcp --dport 464 -m connlimit --connlimit-upto 10 -j ACCEPT
 sudo iptables -t filter -A FORWARD -s $DMZ_MACHINE_IP -d $INTERNAL_MACHINE_IP -i $DMZ_ITF -o $INTERNAL_ITF -p udp --dport 464 -m connlimit --connlimit-upto 10 -j ACCEPT
 
 
-## Indirect Forwarding (DNAT)
+# FTP
 
-
-# Forward the DNS requests 
-# -> (From DMZ and Internal Networks to the Internet) #TODO: Between Networks is (Internet + DMZ + Internal) or (DMZ + Internal)
-sudo iptables -t filter -A FORWARD -s $DMZ_MACHINE_IP -i $DMZ_ITF -o $EXTERNAL_ITF -p tcp --dport domain -j ACCEPT      # DNS from dns server at DMZ
-sudo iptables -t filter -A FORWARD -s $DMZ_MACHINE_IP -i $DMZ_ITF -o $EXTERNAL_ITF -p udp --dport domain -j ACCEPT      # DNS from dns server at DMZ
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport domain -j ACCEPT   # DNS from internal network
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p udp --dport domain -j ACCEPT   # DNS from internal network
-
-# FTP connections to the server ftp
+# Internet -> ftp server
 sudo iptables -t filter -A FORWARD -d $INTERNAL_MACHINE_IP -i $EXTERNAL_ITF -o $INTERNAL_ITF -p tcp --dport ftp -j ACCEPT
-sudo iptables -t filter -A FORWARD -s $INTERNAL_MACHINE_IP -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --sport ftp-data -j ACCEPT # Active mode
+# ftp server ftp-data response -> Internet (Active mode)
+sudo iptables -t filter -A FORWARD -s $INTERNAL_MACHINE_IP -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --sport ftp-data -j ACCEPT
+# Internal Network -> Internet
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport ftp -j ACCEPT
+# Internet ftp-data response -> "Internal Network" (Active Mode)
+sudo iptables -t filter -A FORWARD -d $INTERNAL_NET -i $EXTERNAL_ITF -o $INTERNAL_ITF -p tcp --sport ftp-data -j ACCEPT
 
-# SSH to the datastore server
+# SSH
+
+# eden server -> datastore server
 sudo iptables -t filter -A FORWARD -s $EXTERNAL_EDEN -d $INTERNAL_MACHINE_IP -o $INTERNAL_ITF -p tcp --dport ssh -j ACCEPT
+# dns2 server -> datastore server
 sudo iptables -t filter -A FORWARD -s $EXTERNAL_DNS2 -d $INTERNAL_MACHINE_IP -o $INTERNAL_ITF -p tcp --dport ssh -j ACCEPT  
-
-
-## Indirect Forwarding (SNAT)
-
-
-# HTTP, HTTPS and SSH from the internal network to the Internet
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport http -j ACCEPT
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport https -j ACCEPT
+# Internal Network -> Internet
 sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport ssh -j ACCEPT
 
-# FTP from the Internal network to the Internet 
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNAL_ITF -p tcp --dport ftp -j ACCEPT
-sudo iptables -t filter -A FORWARD -d $INTERNAL_NET -i $EXTERNAL_ITF -o $INTERNAL_ITF -p tcp --sport ftp-data -j ACCEPT # Active mode
 
-# Allow the return of the previously communications
+# Allow the return of the previously communications 
 sudo iptables -t filter -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
 
 # Policy
 sudo iptables -t filter -P FORWARD DROP
 
+
+
 # ---- INPUT ---- #
 
-# Allow SSH connections to the router
-# https://stackoverflow.com/questions/30616527/are-ssh-destination-and-source-ports-identical-symmetric-ports
-sudo iptables -t filter -A INPUT -s $INTERNAL_NET -d $INTERNAL_ROUTER_IP -i $INTERNAL_ITF -p tcp --dport ssh -j ACCEPT  # Originated at the Internal Network
-sudo iptables -t filter -A INPUT -s $DMZ_MACHINE_IP -d $DMZ_ROUTER_IP -i $DMZ_ITF -p tcp --dport ssh -j ACCEPT          # Originated at the vpn-gw machine
 
-# Policy
+# SSH - https://stackoverflow.com/questions/30616527/are-ssh-destination-and-source-ports-identical-symmetric-ports
+
+# Internal Network -> Router
+sudo iptables -t filter -A INPUT -s $INTERNAL_NET -d $INTERNAL_ROUTER_IP -i $INTERNAL_ITF -p tcp --dport ssh -j ACCEPT 
+# vpn-gw machine -> Router
+sudo iptables -t filter -A INPUT -s $DMZ_MACHINE_IP -d $DMZ_ROUTER_IP -i $DMZ_ITF -p tcp --dport ssh -j ACCEPT
+
+
+
+# Policy 
 sudo iptables -t filter -P INPUT DROP
 
 # ---- OUTPUT ---- #
@@ -133,52 +183,106 @@ sudo iptables -t filter -P INPUT DROP
 
 # ---- PREROUTING ---- #
 
-# FTP connection to the ftp server from Internet
-sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport ftp -j DNAT --to-destination $INTERNAL_MACHINE_IP
-# FTP (active mode) Internet server ftp-data response to Internal client
-sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --sport ftp-data -j DNAT ____________ # TODO: Só se for apenas as do ftp server
 
-# SSH to the datastore
+# DNS
+
+# Internet -> Router Internet IP into dns server 
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport domain -j DNAT --to-destination $DMZ_MACHINE_IP 
+
+
+# SMTP
+
+# Internet -> Router Internet IP into smtp server
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport smtp -j DNAT --to-destination $DMZ_MACHINE_IP 
+
+
+# POP
+
+# Internet -> Router Internet IP into mail server
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport pop -j DNAT --to-destination $DMZ_MACHINE_IP 
+
+
+# IMAP
+
+# Internet -> Router Internet IP into mail server
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport imap -j DNAT --to-destination $DMZ_MACHINE_IP 
+
+
+# HTTP
+
+# Internet -> Router Internet IP into www server
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport http -j DNAT --to-destination $DMZ_MACHINE_IP 
+
+
+# HTTPS
+
+# Internet -> Router Internet IP into www server
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport https -j DNAT --to-destination $DMZ_MACHINE_IP 
+
+
+# OpenVPN
+
+# Internet -> Router Internet IP into vpn-gw server
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport 1194 -j DNAT --to-destination $DMZ_MACHINE_IP 
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport 443 -j DNAT --to-destination $DMZ_MACHINE_IP 
+
+
+# FTP
+
+# Internet -> Router Internet IP into ftp server
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport ftp -j DNAT --to-destination $INTERNAL_MACHINE_IP
+# Internet ftp-data response -> Router Internet IP into "Internal Network" (Active Mode)
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --sport ftp-data -j DNAT --to-destination $INTERNAL_MACHINE_IP
+
+
+# SSH
+
+# eden -> Router Internet IP into datastore server
 sudo iptables -t nat -A PREROUTING -s $EXTERNAL_EDEN -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport ssh -j DNAT --to-destination $INTERNAL_MACHINE_IP
+# dns2 -> Router Internet IP into datastore server
 sudo iptables -t nat -A PREROUTING -s $EXTERNAL_DNS2 -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport ssh -j DNAT --to-destination $INTERNAL_MACHINE_IP
 
 
-
 # ---- OUTPUT ---- #
 
 # ---- POSTROUTING ---- #
 
-# DNS from DMZ TODO: NAT devido ao addr do DMZ ser privado (deveria ser público????)
+
+# DNS
+
+# Internal Network into Router Internet IP -> Internet
+sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --dport domain -j SNAT --to-source $EXTERNAL_ROUTER_IP
+sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p udp --dport domain -j SNAT --to-source $EXTERNAL_ROUTER_IP
+# DMZ Network into Router Internet IP -> Internet
 sudo iptables -t nat -A POSTROUTING -s $DMZ_NET -o $EXTERNAL_ITF -p tcp --dport domain -j SNAT --to-source $EXTERNAL_ROUTER_IP
 sudo iptables -t nat -A POSTROUTING -s $DMZ_NET -o $EXTERNAL_ITF -p udp --dport domain -j SNAT --to-source $EXTERNAL_ROUTER_IP
 
-# DNS from Internal Network into Router Internet IP and to the Internet
-sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --dport domain -j SNAT --to-source $EXTERNAL_ROUTER_IP
-sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p udp --dport domain -j SNAT --to-source $EXTERNAL_ROUTER_IP
 
-# HTTP, HTTPS and SSH from Internal Network into Router Internet IP and to the Internet
+# HTTP
+
+# Internal Network into Router Internet IP -> Internet
 sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --dport http -j SNAT --to-source $EXTERNAL_ROUTER_IP
+
+
+# HTTPS
+
+# Internal Network into Router Internet IP -> Internet
 sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --dport https -j SNAT --to-source $EXTERNAL_ROUTER_IP
+
+
+# SSH
+
+# Internal Network into Router Internet IP -> Internet
 sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --dport ssh -j SNAT --to-source $EXTERNAL_ROUTER_IP
 
-# FTP from Internal Network to the Internet
-sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --dport ftp -j SNAT --to-source $EXTERNAL_ROUTER_IP 
 
-# FTP (active mode) ftp server ftp-data response to client on the Internet
+# FTP
+
+# Internal Network into Router Internet IP -> Internet
+sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --dport ftp -j SNAT --to-source $EXTERNAL_ROUTER_IP 
+# ftp server ftp-data response into Router Internet IP -> Internet (Active mode)
 sudo iptables -t nat -A POSTROUTING -s $INTERNAL_MACHINE_IP -o $EXTERNAL_ITF -p tcp --sport ftp-data -j SNAT --to-source $EXTERNAL_ROUTER_IP
 
-
-## ==== [ Table mangle ] ==== ##
-
-# ---- PREROUTING ---- #
-
-# ---- FORWARD ---- #
-
-# ---- INPUT ---- #
-
-# ---- OUTPUT ---- #
-
-# ---- POSTROUTING ---- #
 
 
 ## ==== [ Other Commands ] ==== ##
