@@ -227,14 +227,6 @@ sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tc
 sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport 443 -j DNAT --to-destination $DMZ_MACHINE_IP 
 
 
-# FTP
-
-# Internet -> Router Internet IP into ftp server
-sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport ftp -j DNAT --to-destination $INTERNAL_MACHINE_IP
-# Internet ftp-data response -> Router Internet IP into "Internal Network" (Active Mode)
-sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --sport ftp-data -j DNAT --to-destination $INTERNAL_MACHINE_IP
-
-
 # SSH
 
 # eden -> Router Internet IP into datastore server
@@ -242,6 +234,15 @@ sudo iptables -t nat -A PREROUTING -s $EXTERNAL_EDEN -d $EXTERNAL_ROUTER_IP -i $
 # dns2 -> Router Internet IP into datastore server
 sudo iptables -t nat -A PREROUTING -s $EXTERNAL_DNS2 -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport ssh -j DNAT --to-destination $INTERNAL_MACHINE_IP
 
+
+# FTP
+
+# Internet -> Router Internet IP into ftp server
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport ftp -j DNAT --to-destination $INTERNAL_MACHINE_IP
+# Internet ftp-data response -> Router Internet IP into "Internal Network" (Active Mode)
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --sport ftp-data -j DNAT --to-destination $INTERNAL_MACHINE_IP
+# [ MUST BE LAST RULE ] Internet "ftp-data" follow-up -> Router Internet IP into "Internal Network" (Passive Mode)
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp -j DNAT --to-destination $INTERNAL_MACHINE_IP
 
 # ---- OUTPUT ---- #
 
@@ -282,7 +283,8 @@ sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --d
 sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp --dport ftp -j SNAT --to-source $EXTERNAL_ROUTER_IP 
 # ftp server ftp-data response into Router Internet IP -> Internet (Active mode)
 sudo iptables -t nat -A POSTROUTING -s $INTERNAL_MACHINE_IP -o $EXTERNAL_ITF -p tcp --sport ftp-data -j SNAT --to-source $EXTERNAL_ROUTER_IP
-
+# [ MUST BE LAST RULE ] ftp server "ftp-data" follow-up into Router Internet IP -> Internet (Passive Mode)
+sudo iptables -t nat -A POSTROUTING -s $INTERNAL_NET -o $EXTERNAL_ITF -p tcp -j SNAT --to-source $EXTERNAL_ROUTER_IP 
 
 
 ## ==== [ Other Commands ] ==== ##
