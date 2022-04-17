@@ -74,17 +74,17 @@ sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_I
 # POP
 
 # [Direct] Internal Network -> mail server
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport imap -j ACCEPT
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport pop3 -j ACCEPT
 # Internet -> mail server
-sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport imap -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport pop3 -j ACCEPT
 
 
 # IMAP
 
 # [Direct] Internal Network -> mail server
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport pop -j ACCEPT
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport imap -j ACCEPT
 # Internet -> mail server
-sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport pop -j ACCEPT
+sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport imap -j ACCEPT
 
 
 # HTTP 
@@ -199,7 +199,7 @@ sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tc
 # POP
 
 # Internet -> Router Internet IP into mail server
-sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport pop -j DNAT --to-destination $DMZ_MACHINE_IP 
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport pop3 -j DNAT --to-destination $DMZ_MACHINE_IP 
 
 
 # IMAP
