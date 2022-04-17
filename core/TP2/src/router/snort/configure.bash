@@ -65,7 +65,7 @@ sudo mkdir logs
 touch snort.conf
 
 # Ataque SQLi 1
-echo 'drop tcp any any -> 10.20.20.3 5432 (msg: "AND SQLI Detected"; content: "and"; nocase; sid:100000008;)' > snort.conf
+echo 'drop tcp any any -> 10.20.20.3 5432 (msg: "OR SQLI Detected"; content: "or"; nocase; sid:100000008;)' > snort.conf
 
 # Ataque SQLi 2
 echo 'drop tcp any any -> 10.20.20.3 5432 (msg: "COMMA SQLI Detected"; content: ";"; nocase; sid:100000009;)' >> snort.conf
