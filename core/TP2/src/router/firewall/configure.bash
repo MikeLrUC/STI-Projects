@@ -42,6 +42,8 @@ sudo ifconfig $DMZ_ITF $DMZ_ROUTER_IP netmask 255.255.255.0             # DMZ
 
 # ---- FORWARD ---- #
 
+# SNORT
+sudo iptables -A FORWARD -j NFQUEUE --queue-num 0
 
 # DNS
 
@@ -164,6 +166,7 @@ sudo iptables -t filter -P FORWARD DROP
 # ---- INPUT ---- #
 
 
+
 # SSH - https://stackoverflow.com/questions/30616527/are-ssh-destination-and-source-ports-identical-symmetric-ports
 
 # Internal Network -> Router
@@ -188,6 +191,7 @@ sudo iptables -t filter -P INPUT DROP
 
 # Internet -> Router Internet IP into dns server 
 sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport domain -j DNAT --to-destination $DMZ_MACHINE_IP 
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p udp --dport domain -j DNAT --to-destination $DMZ_MACHINE_IP 
 
 
 # SMTP
@@ -223,7 +227,7 @@ sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tc
 # OpenVPN
 
 # Internet -> Router Internet IP into vpn-gw server
-sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport 1194 -j DNAT --to-destination $DMZ_MACHINE_IP 
+sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p udp --dport 1194 -j DNAT --to-destination $DMZ_MACHINE_IP 
 sudo iptables -t nat -A PREROUTING -d $EXTERNAL_ROUTER_IP -i $EXTERNAL_ITF -p tcp --dport 443 -j DNAT --to-destination $DMZ_MACHINE_IP 
 
 
