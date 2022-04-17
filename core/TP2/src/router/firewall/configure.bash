@@ -110,8 +110,8 @@ sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -i $INTERNAL_ITF -o $EXTERNA
 # OpenVPN - https://openvpn.net/vpn-server-resources/advanced-option-settings-on-the-command-line/ 
 
 # [Direct] Internal Network -> vpn-gw server
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_NET -o $DMZ_ITF -p udp --dport 1194 -j ACCEPT
-sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_NET -o $DMZ_ITF -p tcp --dport 443 -j ACCEPT
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p udp --dport 1194 -j ACCEPT
+sudo iptables -t filter -A FORWARD -s $INTERNAL_NET -d $DMZ_MACHINE_IP -i $INTERNAL_ITF -o $DMZ_ITF -p tcp --dport 443 -j ACCEPT
 # Internet -> vpn-gw server 
 sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p udp --dport 1194 -j ACCEPT
 sudo iptables -t filter -A FORWARD -d $DMZ_MACHINE_IP -i $EXTERNAL_ITF -o $DMZ_ITF -p tcp --dport 443 -j ACCEPT
