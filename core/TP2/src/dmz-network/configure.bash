@@ -8,5 +8,5 @@ fi
 INTERFACE=$1
 
 # Configure Interface
-sudo ifconfig $1 10.10.10.2 netmask 255.255.255.0
-sudo route add default gw 10.10.10.1 $1
+sudo ifconfig $1 10.10.10.3 netmask 255.255.255.0
+sudo route add default gw 10.10.10.2 $1

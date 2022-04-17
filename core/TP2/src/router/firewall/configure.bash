@@ -2,7 +2,7 @@
 
 if [ "$#" -ne 4 ]; then
     echo "Usage: bash configure.bash <external-interface-name> <external-ip> <dmz-interface-name> <internal-interface-name>"
-    echo 1
+    exit 1
 fi
 
 ## ==== [ Configuration Variables ] ==== ##
@@ -16,14 +16,14 @@ EXTERNAL_EDEN=193.136.212.1
 # DMZ Network Variables
 DMZ_ITF=$3
 DMZ_NET=10.10.10.0/24
-DMZ_ROUTER_IP=10.10.10.1
-DMZ_MACHINE_IP=10.10.10.2
+DMZ_ROUTER_IP=10.10.10.2
+DMZ_MACHINE_IP=10.10.10.3
 
 # Internal Network Variables
 INTERNAL_ITF=$4
 INTERNAL_NET=10.20.20.0/24
-INTERNAL_ROUTER_IP=10.20.20.1
-INTERNAL_MACHINE_IP=10.20.20.2
+INTERNAL_ROUTER_IP=10.20.20.2
+INTERNAL_MACHINE_IP=10.20.20.3
 
 ## ==== [ System Packages Installation ] ==== ##
 
