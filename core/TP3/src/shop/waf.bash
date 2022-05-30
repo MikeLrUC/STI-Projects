@@ -28,8 +28,9 @@ done
 sudo cp /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
 echo "SecRuleEngine On" | sudo tee -a /etc/modsecurity/modsecurity.conf
 
-# Replace Site config
+# Replace Configs
 sudo cp $filedir/configs/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+sudo cp $filedir/configs/crs-setup.conf /etc/modsecurity/crs/crs-setup.conf
 
 # Restart Apache2 Service
 sudo apache2ctl restart

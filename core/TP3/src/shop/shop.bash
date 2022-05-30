@@ -28,7 +28,7 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 
 # Docker JuiceShop Image pull and run
-if [[ $(uname -p) == 'x86_64' ]]; then
+if [[ $(uname -m) == 'x86_64' ]]; then
     sudo docker pull bkimminich/juice-shop
     sudo docker run --rm -p 3000:3000 bkimminich/juice-shop
 else
