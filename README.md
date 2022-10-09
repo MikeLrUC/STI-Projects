@@ -6,5 +6,6 @@ Projects for the Information Technology Security subject
 - TP2: IPTables and Snort
 - TP3: OWASP Juice Shop Analysis
 
-## Collaborators
+## Team
 - [Gabriel Fernandes](https://github.com/gabrielmendesfernandes)
+- [Miguel Rabuge](https://github.com/MikeLrUC)
