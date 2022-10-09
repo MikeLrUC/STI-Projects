@@ -1,6 +1,6 @@
 # STI Projects
 
-Projects for the Information Tecnology Security subject
+Projects for the Information Technology Security subject
 
 - TP1: VPN and Certificates
 - TP2: IPTables and Snort
